@@ -3,6 +3,7 @@
   "plugins": ["prettier"],
   "rules": {
     "import/no-extraneous-dependencies": "off",
+    "new-cap": "off",
     "prettier/prettier": "error",
     "spaced-comment": "off",
     "no-console": "warn",

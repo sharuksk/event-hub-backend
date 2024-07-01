@@ -3,8 +3,12 @@ const morgan = require("morgan");
 const AppError = require("./src/utils/appError");
 const globalErrorHandler = require("./src/controllers/errorController");
 const bookingRouter = require("./src/routes/bookingRouter");
+
 const typesRouter = require("./src/routes/typesRouter");
 const itemsRouter = require("./src/routes/itemsRouter");
+
+const clientRouter = require("./src/routes/clientRouter");
+const calendarRouter = require("./src/routes/calendarRouter");
 
 const app = express();
 app.use(express.json());
@@ -21,8 +25,12 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/v1/", bookingRouter);
+
 app.use("/api/v1/types", typesRouter);
 app.use("/api/v1/items", itemsRouter);
+
+app.use("/api/v1/", clientRouter);
+app.use("/api/v1/", calendarRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
