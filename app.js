@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const AppError = require("./src/utils/appError");
 const globalErrorHandler = require("./src/controllers/errorController");
 const bookingRouter = require("./src/routes/bookingRouter");
+const userRouter = require("./src/routes/userRoute");
 
 const typesRouter = require("./src/routes/typesRouter");
 const itemsRouter = require("./src/routes/itemsRouter");
@@ -24,7 +25,12 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
 app.use("/api/v1/", bookingRouter);
+app.use("/api/", userRouter);
 
 app.use("/api/v1/types", typesRouter);
 app.use("/api/v1/items", itemsRouter);

@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const { Schema } = mongoose;
 
@@ -22,9 +23,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    profilePicture: {
-      type: String,
-    },
     phoneNumber: {
       type: String,
     },
@@ -33,6 +31,19 @@ const userSchema = new Schema(
     timestamps: true,
   },
 );
+
+userSchema.methods.matchPassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.passwordHash);
+};
+
+userSchema.pre("save", async function(next) {
+  if (!this.isModified("passwordHash")) {
+    next();
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+});
 
 const User = mongoose.model("User", userSchema);
 
