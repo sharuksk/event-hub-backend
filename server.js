@@ -1,10 +1,12 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+// const { GridFsStorage } = require("multer-gridfs-storage");
+// const multer = require("multer");
 
 process.on("uncaughtException", (err) => {
+  console.log(err);
   console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
-  console.log(err.name, err.message);
+  console.log(err.name, err.message, err.stack);
   process.exit(1);
 });
 
@@ -21,6 +23,24 @@ const app = require("./app");
 const DB = process.env.DATABASE_LOCAL;
 
 mongoose.connect(DB).then(() => console.log("DB connection successful!"));
+
+// // GridFS storage configuration
+// const storage = new GridFsStorage({
+//   url: DB,
+//   file: (req, file) => {
+//     return {
+//       bucketName: "uploads", // Bucket name in MongoDB
+//       filename: file.originalname,
+//     };
+//   },
+// });
+
+// const upload = multer({ storage });
+
+// app.use((req, res, next) => {
+//   req.upload = upload;
+//   next();
+// });
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
