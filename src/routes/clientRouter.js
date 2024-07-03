@@ -20,4 +20,6 @@ router
   .put(clientController.updateClient)
   .delete(clientController.deleteClient);
 
+router.get("/client/:clientId/bookings", clientController.clientBooked);
+
 module.exports = router;

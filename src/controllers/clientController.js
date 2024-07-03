@@ -5,6 +5,7 @@ const multer = require("multer");
 const Client = require("../models/clientModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const Booked = require("../models/bookingModel");
 
 // * GridFS storage configuration
 const storage = new GridFsStorage({
@@ -148,5 +149,31 @@ exports.deleteClient = catchAsync(async (req, res, next) => {
   res.status(204).json({
     status: "success",
     data: null,
+  });
+});
+
+exports.clientBooked = catchAsync(async (req, res, next) => {
+  const clientId = req.params.clientId;
+
+  const today = new Date();
+
+  const bookings = await Booked.find({
+    clientId,
+    date: { $gte: today },
+    status: "booked",
+  })
+    .populate("user", "fullName email")
+    .populate("itemId")
+    .populate("organizingTeam");
+
+  if (!bookings || bookings.length === 0) {
+    return next(new AppError("No upcoming bookings found for this client", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      bookings,
+    },
   });
 });
