@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/", bookingRouter);
-app.use("/api/", userRouter);
+app.use("/api/v1/", userRouter);
 
 app.use("/api/v1/types", typesRouter);
 app.use("/api/v1/items", itemsRouter);

@@ -8,6 +8,11 @@ const itemSchema = new Schema({
     ref: "Event",
     required: true,
   },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 
   name: {
     type: String,
@@ -18,6 +23,10 @@ const itemSchema = new Schema({
   },
   capacity: {
     type: Number,
+  },
+  theme: {
+    type: String,
+    required: true,
   },
   description: {
     type: String,
