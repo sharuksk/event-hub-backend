@@ -2,41 +2,22 @@
 const Booking = require("../models/bookingModel");
 const Item = require("../models/itemsModel");
 const Confirm = require("../models/confirmationModel");
-const {
-  checkItemAvailability,
-  removeDatesFromBookingItems,
-  addDatesToBookingItems,
-} = require("../utils/utils");
 
 // Create a new booking
 
 exports.createBooking = async (req, res) => {
   try {
-    const { date, venu, catring, decoration, photograph } = req.body;
+    const { itemIds } = req.body;
 
-    //Checking the availability dates
-    await checkItemAvailability(date, venu, "venu");
-    await checkItemAvailability(date, decoration, "Decoration");
-    await checkItemAvailability(date, catring, "Catring");
-    await checkItemAvailability(date, photograph, "Photograph");
-
-    const newBooking = new Booking({ ...req.body, date: null });
-
-    //creating confirmation collections
-    [venu, catring, decoration, photograph].map(async (singleItemId) => {
-      const confimation = new Confirm({
-        user: req.body.user,
-        clientId: req.body.clientId,
-        newBooking: newBooking._id,
-        date: date,
+    itemIds.map(async (itemId) => {
+      const newBooking = new Booking({
+        ...req.body,
+        itemId,
       });
-      newBooking.confirmation.push(confimation._id);
-      await confimation.save();
+      await newBooking.save();
+      return;
     });
-
-    await newBooking.save();
-
-    res.status(201).json(newBooking);
+    res.status(201).json({ message: "New booking added" });
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: error.message });
@@ -52,12 +33,16 @@ exports.cancelBooking = async (req, res) => {
     }
 
     booking.status = "cancelled";
-    const { date, venu, catring, decoration, photograph } = booking;
 
-    await removeDatesFromBookingItems(date, venu);
-    await removeDatesFromBookingItems(date, catring);
-    await removeDatesFromBookingItems(date, decoration);
-    await removeDatesFromBookingItems(date, photograph);
+    const { date, itemId } = booking;
+
+    const item = await Item.findById(itemId);
+    const dateIndex = item.dates.findIndex((d) => d.toISOString() === date.toISOString());
+    if (dateIndex === -1) {
+      console.log("Date not found in item");
+    } else {
+      await Item.updateOne({ _id: itemId }, { $pull: { dates: date } });
+    }
 
     await booking.save();
     res.status(200).json(booking);
@@ -84,26 +69,18 @@ exports.editBooking = async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
     if (req.body.date) {
-      const { date, venu, catring, decoration, photograph } = booking;
-      await removeDatesFromBookingItems(date, venu);
-      await removeDatesFromBookingItems(date, catring);
-      await removeDatesFromBookingItems(date, decoration);
-      await removeDatesFromBookingItems(date, photograph);
+      const { date, itemId } = booking;
 
-      await addDatesToBookingItems(req.body.date, venu);
-      await addDatesToBookingItems(req.body.date, catring);
-      await addDatesToBookingItems(req.body.date, decoration);
-      await addDatesToBookingItems(req.body.date, photograph);
-
-      for (let confirmId of booking.confirmation) {
-        await Confirm.updateOne(
-          { _id: confirmId },
-          { $set: { date: req.body.date, isConfirmed: false, isEdited: true } },
-        );
+      const item = await Item.findById(itemId);
+      const dateIndex = item.dates.findIndex((d) => d.toISOString() === date.toISOString());
+      if (dateIndex === -1) {
+        console.log("Date not found in item");
       }
+
+      await Item.updateOne({ _id: itemId }, { $pull: { dates: date } });
     }
 
-    Object.assign(booking, req.body);
+    Object.assign(booking, { ...req.body, isEdited: true });
 
     await booking.save();
     res.status(200).json(booking);

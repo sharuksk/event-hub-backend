@@ -9,10 +9,8 @@ const BookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    venu: { type: mongoose.Schema.Types.ObjectId, required: true },
-    catring: { type: mongoose.Schema.Types.ObjectId, required: true },
-    decoration: { type: mongoose.Schema.Types.ObjectId, required: true },
-    photograph: { type: mongoose.Schema.Types.ObjectId, required: true },
+    clientId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    itemId: { type: mongoose.Schema.Types.ObjectId, required: true },
     organizingTeam: {
       type: mongoose.Schema.Types.ObjectId,
       // ref: "Organizer",
@@ -20,14 +18,21 @@ const BookingSchema = new mongoose.Schema(
     },
     date: {
       type: Date,
+      required: true,
     },
     status: {
       type: String,
       enum: ["booked", "cancelled"],
       default: "booked",
     },
-    confirmation: {
-      type: [{ type: mongoose.Schema.Types.ObjectId, required: true, ref: "Confirm" }],
+
+    isConfirmed: {
+      type: Boolean,
+      default: false,
+    },
+    isEdited: {
+      type: Boolean,
+      default: false,
     },
   },
   {
