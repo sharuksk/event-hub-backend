@@ -30,11 +30,19 @@ exports.editItem = catchAsync(async (req, res) => {
   res.status(201).json({ message: "Edited successful", updatedItem });
 });
 
-exports.getItems = catchAsync(async (req, res) => {
+exports.getItemsByType = catchAsync(async (req, res) => {
   const typeId = req.params.typeId;
   const items = await Item.find({ typeId });
   res.status(200).json({
     message: "Success",
     items,
   });
+});
+
+exports.getSingleItemById = catchAsync(async (req, res) => {
+  const itemId = req.params.itemId;
+  const item = await Item.findById(itemId);
+  if (!item) return next(new AppError("Item not found", 404));
+
+  res.status(200).json({ message: "success", item: item });
 });

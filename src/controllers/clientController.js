@@ -6,6 +6,7 @@ const Client = require("../models/clientModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Booked = require("../models/bookingModel");
+const User = require("../models/userModel");
 
 // * GridFS storage configuration
 const storage = new GridFsStorage({
@@ -102,6 +103,10 @@ exports.getAllClients = catchAsync(async (req, res, next) => {
 // * Create Client
 exports.createClient = catchAsync(async (req, res, next) => {
   const newClient = await Client.create(req.body);
+  await User.findByIdAndUpdate(req.body.userId, {
+    role: "client",
+    clientId: newClient._id,
+  });
 
   res.status(201).json({
     status: "success",
@@ -116,9 +121,8 @@ exports.getClientByID = catchAsync(async (req, res, next) => {
   const client = await Client.findById(req.params.id);
 
   if (!client) {
-    return next(new AppError("No client found with that ID"));
+    return res.status(200).json({ message: "No client for this userid" });
   }
-
   res.status(200).json({
     status: "success",
     data: {
@@ -165,10 +169,6 @@ exports.clientBooked = catchAsync(async (req, res, next) => {
     .populate("user", "fullName email")
     .populate("itemId")
     .populate("organizingTeam");
-
-  if (!bookings || bookings.length === 0) {
-    return next(new AppError("No upcoming bookings found for this client", 404));
-  }
 
   res.status(200).json({
     status: "success",

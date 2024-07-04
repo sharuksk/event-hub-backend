@@ -26,6 +26,10 @@ const userSchema = new Schema(
     phoneNumber: {
       type: String,
     },
+    clientId: {
+      type: Schema.Types.ObjectId,
+      ref: "Client",
+    },
   },
   {
     timestamps: true,

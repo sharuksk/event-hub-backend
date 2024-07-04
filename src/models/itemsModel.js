@@ -8,12 +8,11 @@ const itemSchema = new Schema({
     ref: "Event",
     required: true,
   },
-  userId: {
+  clientId: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-
   name: {
     type: String,
     required: true,
@@ -26,7 +25,6 @@ const itemSchema = new Schema({
   },
   theme: {
     type: String,
-    required: true,
   },
   description: {
     type: String,
