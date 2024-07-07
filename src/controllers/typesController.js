@@ -11,7 +11,7 @@ exports.createType = catchAsync(async (req, res) => {
   });
 });
 
-exports.deleteType = catchAsync(async (req, res) => {
+exports.deleteType = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const deleted = await Type.findOneAndDelete({ _id: id });
 

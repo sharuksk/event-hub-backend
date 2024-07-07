@@ -6,7 +6,7 @@ const AppError = require("../utils/appError");
 
 // Create a new booking
 
-exports.createBooking = catchAsync(async (req, res) => {
+exports.createBooking = catchAsync(async (req, res, next) => {
   const { itemIds } = req.body;
 
   itemIds.map(async (itemId) => {
@@ -20,7 +20,7 @@ exports.createBooking = catchAsync(async (req, res) => {
 });
 
 // Cancel a booking
-exports.cancelBooking = catchAsync(async (req, res) => {
+exports.cancelBooking = catchAsync(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id);
   if (!booking) {
     return next(new AppError("Booking not found", 404));
@@ -43,13 +43,13 @@ exports.cancelBooking = catchAsync(async (req, res) => {
 });
 
 // Get all bookings
-exports.getBookings = catchAsync(async (req, res) => {
+exports.getBookings = async (req, res, next) => {
   const bookings = await Booking.find();
   res.status(200).json(bookings);
-});
+};
 
 // edit booking
-exports.editBooking = catchAsync(async (req, res) => {
+exports.editBooking = catchAsync(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id);
   if (!booking) {
     return next(new AppError("Booking not found", 404));

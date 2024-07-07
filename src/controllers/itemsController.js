@@ -2,7 +2,7 @@ const Item = require("../models/itemsModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-exports.createItems = catchAsync(async (req, res) => {
+exports.createItems = catchAsync(async (req, res, next) => {
   const newItem = new Item(req.body);
   await newItem.save();
   res.status(201).json({
@@ -11,7 +11,7 @@ exports.createItems = catchAsync(async (req, res) => {
   });
 });
 
-exports.deleteItem = catchAsync(async (req, res) => {
+exports.deleteItem = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const deletedData = await Item.findOneAndDelete({ _id: id });
   if (!deletedData) {
@@ -20,7 +20,7 @@ exports.deleteItem = catchAsync(async (req, res) => {
   res.status(200).json({ message: "Deleted successfull" });
 });
 
-exports.editItem = catchAsync(async (req, res) => {
+exports.editItem = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const updatedItem = await Item.findOneAndUpdate({ _id: id }, req.body, { new: true });
 
@@ -30,7 +30,7 @@ exports.editItem = catchAsync(async (req, res) => {
   res.status(201).json({ message: "Edited successful", updatedItem });
 });
 
-exports.getItemsByType = catchAsync(async (req, res) => {
+exports.getItemsByType = catchAsync(async (req, res, next) => {
   const typeId = req.params.typeId;
   const items = await Item.find({ typeId });
   res.status(200).json({
@@ -39,7 +39,7 @@ exports.getItemsByType = catchAsync(async (req, res) => {
   });
 });
 
-exports.getSingleItemById = catchAsync(async (req, res) => {
+exports.getSingleItemById = catchAsync(async (req, res, next) => {
   const itemId = req.params.itemId;
   const item = await Item.findById(itemId);
   if (!item) return next(new AppError("Item not found", 404));

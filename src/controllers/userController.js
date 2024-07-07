@@ -20,7 +20,8 @@ exports.createUser = catchAsync(async (req, res, next) => {
       res.status(200).json({
         status: "success",
         data: {
-          user,
+          ...user,
+          passwordHash: null,
         },
       });
     }
@@ -41,8 +42,8 @@ exports.loginUser = catchAsync(async (req, res, next) => {
       res.status(200).json({
         status: "success",
         data: {
-          email: email,
-          password: passwordHash,
+          ...user,
+          passwordHash: null,
         },
       });
     } else {
