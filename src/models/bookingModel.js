@@ -34,6 +34,10 @@ const BookingSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    groupId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
