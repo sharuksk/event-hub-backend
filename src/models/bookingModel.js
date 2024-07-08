@@ -16,10 +16,12 @@ const BookingSchema = new mongoose.Schema(
       // ref: "Organizer",
       required: true,
     },
-    date: {
-      type: Date,
-      required: true,
-    },
+    date: [
+      {
+        type: Date,
+        required: true,
+      },
+    ],
     status: {
       type: String,
       enum: ["booked", "cancelled"],
@@ -33,6 +35,10 @@ const BookingSchema = new mongoose.Schema(
     isEdited: {
       type: Boolean,
       default: false,
+    },
+    groupId: {
+      type: String,
+      required: true,
     },
   },
   {
