@@ -102,18 +102,22 @@ exports.getAllClients = catchAsync(async (req, res, next) => {
 
 // * Create Client
 exports.createClient = catchAsync(async (req, res, next) => {
-  const newClient = await Client.create(req.body);
-  await User.findByIdAndUpdate(req.body.userId, {
-    role: "client",
-    clientId: newClient._id,
-  });
+  try {
+    const newClient = await Client.create(req.body);
+    await User.findByIdAndUpdate(req.body.userId, {
+      role: "client",
+      clientId: newClient._id,
+    });
 
-  res.status(201).json({
-    status: "success",
-    data: {
-      newClient,
-    },
-  });
+    res.status(201).json({
+      status: "success",
+      data: {
+        newClient,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // * Get Client by id
@@ -133,13 +137,23 @@ exports.getClientByID = catchAsync(async (req, res, next) => {
 
 // * update client
 exports.updateClient = catchAsync(async (req, res, next) => {
-  const client = await Client.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  try {
+    const client = await Client.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-  if (!client) {
-    return next(new AppError("No client found with that ID"));
+    if (!client) {
+      return next(new AppError("No client found with that ID"));
+    }
+    res.status(201).json({
+      status: "success",
+      data: {
+        client,
+      },
+    });
+  } catch (err) {
+    console.log(err);
   }
 });
 // * delete client
