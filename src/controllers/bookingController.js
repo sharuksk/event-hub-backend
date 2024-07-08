@@ -10,7 +10,6 @@ const { v4: uuidv4 } = require("uuid");
 exports.createBooking = catchAsync(async (req, res, next) => {
   const { itemIds } = req.body;
   const uniqueId = uuidv4();
-  console.log(uniqueId);
 
   itemIds.map(async (itemId) => {
     const newBooking = new Booking({
@@ -35,11 +34,13 @@ exports.cancelBooking = catchAsync(async (req, res, next) => {
   const { date, itemId } = booking;
 
   const item = await Item.findById(itemId);
-  const dateIndex = item.dates.findIndex((d) => d.toISOString() === date.toISOString());
-  if (dateIndex === -1) {
-    console.log("Date not found in item");
-  } else {
-    await Item.updateOne({ _id: itemId }, { $pull: { dates: date } });
+  for (let i = 0; i < date.length; i++) {
+    const dateIndex = item.dates.findIndex((d) => d.toISOString() === date[i].toISOString());
+    if (dateIndex === -1) {
+      console.log("Date not found in item");
+    } else {
+      await Item.updateOne({ _id: itemId }, { $pull: { dates: date[i] } });
+    }
   }
 
   await booking.save();
@@ -62,13 +63,15 @@ exports.editBooking = catchAsync(async (req, res, next) => {
     const { date, itemId } = booking;
 
     const item = await Item.findById(itemId);
-    const dateIndex = item.dates.findIndex((d) => d.toISOString() === date.toISOString());
+    for(let i = 0; i<date.length; i++){
+    const dateIndex = item.dates.findIndex((d) => d.toISOString() === date[i].toISOString());
     if (dateIndex === -1) {
       console.log("Date not found in item");
     }
 
-    await Item.updateOne({ _id: itemId }, { $pull: { dates: date } });
+    await Item.updateOne({ _id: itemId }, { $pull: { dates: date[i] } });
   }
+}
 
   Object.assign(booking, { ...req.body, isEdited: true });
 
