@@ -42,8 +42,11 @@ exports.loginUser = catchAsync(async (req, res, next) => {
       res.status(200).json({
         status: "success",
         data: {
-          ...user,
-          passwordHash: null,
+          name: user.fullName,
+          email: email,
+          id: user._id,
+          role: user.role,
+          phoneNumber: user.phoneNumber,
         },
       });
     } else {
