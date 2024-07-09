@@ -22,3 +22,13 @@ exports.deleteType = catchAsync(async (req, res, next) => {
     message: "success",
   });
 });
+
+exports.getType = catchAsync(async (req, res) => {
+  const types = await Type.findAll();
+  console.log(types);
+
+  res.status(2000).json({
+    message: "success",
+    types,
+  });
+});

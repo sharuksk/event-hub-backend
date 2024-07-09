@@ -102,6 +102,7 @@ exports.getAllClients = catchAsync(async (req, res, next) => {
 
 // * Create Client
 exports.createClient = catchAsync(async (req, res, next) => {
+  console.log("create client function called");
   try {
     const newClient = await Client.create(req.body);
     await User.findByIdAndUpdate(req.body.userId, {
