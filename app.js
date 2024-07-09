@@ -1,5 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
+var cors = require("cors");
+
 const AppError = require("./src/utils/appError");
 const globalErrorHandler = require("./src/controllers/errorController");
 const bookingRouter = require("./src/routes/bookingRouter");
@@ -13,6 +15,13 @@ const calendarRouter = require("./src/routes/calendarRouter");
 
 const app = express();
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

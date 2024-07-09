@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    fullName: {
+    name: {
       type: String,
       required: true,
     },
@@ -15,20 +15,16 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
-    passwordHash: {
+    password: {
       type: String,
       required: true,
     },
     role: {
       type: String,
-      required: true,
+      default: "user",
     },
     phoneNumber: {
       type: String,
-    },
-    clientId: {
-      type: Schema.Types.ObjectId,
-      ref: "Client",
     },
   },
   {
@@ -37,16 +33,16 @@ const userSchema = new Schema(
 );
 
 userSchema.methods.matchPassword = async function(enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.passwordHash);
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 userSchema.pre("save", async function(next) {
-  if (!this.isModified("passwordHash")) {
+  if (!this.isModified("password")) {
     next();
   }
 
   const salt = await bcrypt.genSalt(10);
-  this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 const User = mongoose.model("User", userSchema);
