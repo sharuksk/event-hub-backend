@@ -46,17 +46,27 @@ exports.createUser = catchAsync(async (req, res, next) => {
 // login
 
 exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
-  console.log(user);
+    const user = await User.findOne({ email });
+    console.log(user);
 
-  if (user && (await user.matchPassword(password))) {
-    res.status(200).json({
-      ...user,
-      password: null,
-    });
-  } else {
-    res.status(400).json({ message: "Invalid email or password" });
+    if (user && (await user.matchPassword(password))) {
+      res.status(200).json({
+        status: "success",
+        data: {
+          name: user.name,
+          email: email,
+          id: user._id,
+          role: user.role,
+          phoneNumber: user.phoneNumber,
+        },
+      });
+    } else {
+      return next(new AppError("Invalid email or password"));
+    }
+  } catch (err) {
+    res.status(400).json({ message: err });
   }
 };
