@@ -6,7 +6,6 @@ const AppError = require("../utils/appError");
 const { v4: uuidv4 } = require("uuid");
 
 // Create a new booking
-
 exports.createBooking = catchAsync(async (req, res, next) => {
   const { itemIds } = req.body;
   const uniqueId = uuidv4();
@@ -50,7 +49,12 @@ exports.cancelBooking = catchAsync(async (req, res, next) => {
 // Get all bookings
 exports.getBookings = async (req, res, next) => {
   const bookings = await Booking.find();
-  res.status(200).json(bookings);
+  res.status(200).json({ bookings });
+};
+//GET BOOKINGS BY CLIENT ID
+exports.getBookingsByClientId = async (req, res, next) => {
+  const bookings = await Booking.find({ clientId: req.params.id });
+  res.status(200).json({ bookings });
 };
 
 // edit booking
@@ -63,20 +67,29 @@ exports.editBooking = catchAsync(async (req, res, next) => {
     const { date, itemId } = booking;
 
     const item = await Item.findById(itemId);
-    for(let i = 0; i<date.length; i++){
-    const dateIndex = item.dates.findIndex((d) => d.toISOString() === date[i].toISOString());
-    if (dateIndex === -1) {
-      console.log("Date not found in item");
-    }
+    for (let i = 0; i < date.length; i++) {
+      const dateIndex = item.dates.findIndex((d) => d.toISOString() === date[i].toISOString());
+      if (dateIndex === -1) {
+        console.log("Date not found in item");
+      }
 
-    await Item.updateOne({ _id: itemId }, { $pull: { dates: date[i] } });
+      await Item.updateOne({ _id: itemId }, { $pull: { dates: date[i] } });
+    }
   }
-}
 
   Object.assign(booking, { ...req.body, isEdited: true });
 
   await booking.save();
   res.status(200).json(booking);
+});
+
+exports.confirmBooking = catchAsync(async (req, res, next) => {
+  const booking = await Booking.findById(req.params.id);
+  if (!booking) return next(new AppError("Booking not found", 404));
+
+  booking.isConfirmed = true;
+  await booking.save();
+  return res.status(201).json({ message: "success", booking });
 });
 
 exports.getEvents = catchAsync(async (req, res, next) => {
