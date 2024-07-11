@@ -17,11 +17,7 @@ const ClientSchema = new mongoose.Schema(
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    role: {
-      type: String,
-      enum: ["photography", "decoration", "venue", "catering", "organizing Team"],
-      required: true,
-    },
+    role: { type: mongoose.Schema.Types.ObjectId, ref: "Type", required: true },
     workExperience: { type: Number, required: true },
     location: { type: String, required: true },
     contact: { type: String, required: true },

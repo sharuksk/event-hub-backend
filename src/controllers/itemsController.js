@@ -1,8 +1,32 @@
 const Item = require("../models/itemsModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const multer = require("multer");
+const { GridFsStorage } = require("multer-gridfs-storage");
+const { GridFSBucket } = require("mongodb");
+const mongoose = require("mongoose");
+
+const storage = new GridFsStorage({
+  url: process.env.DATABASE_LOCAL,
+  file: (req, file) => {
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+      return {
+        bucketName: "images",
+        filename: `${Date.now()}_${file.originalname}`,
+      };
+    }
+  },
+});
+
+const upload = multer({ storage });
+
+exports.uploadImages = upload.array("images", 10);
 
 exports.createItems = catchAsync(async (req, res, next) => {
+  // const imageFiles = req.files.map((file) => file.filename);
+
+  // req.body.images = imageFiles;
+
   const newItem = new Item(req.body);
   await newItem.save();
   res.status(201).json({

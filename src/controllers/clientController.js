@@ -104,11 +104,13 @@ exports.getAllClients = catchAsync(async (req, res, next) => {
 exports.createClient = catchAsync(async (req, res, next) => {
   console.log("create client function called");
   try {
-    const newClient = await Client.create(req.body);
+    const client = await Client.create(req.body);
+
     await User.findByIdAndUpdate(req.body.userId, {
       role: "client",
-      clientId: newClient._id,
+      clientId: client._id,
     });
+    const newClient = await Client.findById(client._id).populate("role");
 
     res.status(201).json({
       status: "success",

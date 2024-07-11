@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const itemSchema = new Schema({
   typeId: {
     type: Schema.Types.ObjectId,
-    ref: "Event",
+    ref: "Type",
     required: true,
   },
   clientId: {
@@ -31,6 +31,12 @@ const itemSchema = new Schema({
     required: true,
   },
   images: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+  decorationImages: [
     {
       type: String,
       required: true,

@@ -24,10 +24,10 @@ exports.deleteType = catchAsync(async (req, res, next) => {
 });
 
 exports.getType = catchAsync(async (req, res) => {
-  const types = await Type.findAll();
+  const types = await Type.find();
   console.log(types);
 
-  res.status(2000).json({
+  res.status(200).json({
     message: "success",
     types,
   });
