@@ -20,12 +20,64 @@ const storage = new GridFsStorage({
 
 const upload = multer({ storage });
 
-exports.uploadImages = upload.array("images", 10);
+exports.uploadImages = upload.fields([
+  { name: "images", maxCount: 10 },
+  { name: "decorationImages", maxCount: 10 },
+]);
+
+const getImages = async (image) => {
+  try {
+    const { db } = mongoose.connection;
+    const imageBucket = new GridFSBucket(db, { bucketName: "images" });
+
+    const filenames = image;
+
+    if (!filenames.length) {
+      return res.status(400).send({ error: "No filenames provided" });
+    }
+    const imagePromises = filenames.map((filename) => {
+      return new Promise((resolve, reject) => {
+        const imageData = [];
+        const downloadStream = imageBucket.openDownloadStreamByName(filename);
+
+        downloadStream.on("data", function(data) {
+          imageData.push(data);
+        });
+
+        downloadStream.on("error", function() {
+          reject(new AppError(`${filename}, error: "Image not found" `), 400);
+        });
+
+        downloadStream.on("end", () => {
+          resolve({
+            filename,
+            data: Buffer.concat(imageData).toString("base64"),
+          });
+        });
+      });
+    });
+
+    const images = await Promise.all(imagePromises.map((p) => p.catch((e) => e)));
+
+    const successfulImages = images.filter((image) => image.data);
+    const failedImages = images.filter((image) => image.error);
+    return successfulImages;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 exports.createItems = catchAsync(async (req, res, next) => {
-  // const imageFiles = req.files.map((file) => file.filename);
+  const imageFiles = req.files.images ? req.files?.images?.map((file) => file.filename) : [];
+  const decorationFiles = req.files.decorationImages
+    ? req?.files?.decorationImages?.map((file) => file.filename)
+    : [];
 
-  // req.body.images = imageFiles;
+  console.log(req.files);
+
+  if (decorationFiles.length > 0) req.body.decorationImages = decorationFiles;
+
+  if (imageFiles.length > 0) req.body.images = imageFiles;
 
   const newItem = new Item(req.body);
   await newItem.save();
@@ -68,5 +120,10 @@ exports.getSingleItemById = catchAsync(async (req, res, next) => {
   const item = await Item.findById(itemId);
   if (!item) return next(new AppError("Item not found", 404));
 
-  res.status(200).json({ message: "success", item: item });
+  const images = await getImages(item.images);
+  const decorationImages = await getImages(item.decorationImages);
+
+  res
+    .status(200)
+    .json({ message: "success", item: item, images: images, decorationImages: decorationImages });
 });
