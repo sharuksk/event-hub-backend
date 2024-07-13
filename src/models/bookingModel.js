@@ -14,7 +14,7 @@ const BookingSchema = new mongoose.Schema(
     organizingTeam: {
       type: mongoose.Schema.Types.ObjectId,
       // ref: "Organizer",
-      required: true,
+      // required: true,
     },
     date: [
       {

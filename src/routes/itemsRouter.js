@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get("/types/:typeId", itemsController.getItemsByType);
 router.get("/:itemId", itemsController.getSingleItemById);
+router.get("/", itemsController.getItem);
 router.post("/create", itemsController.uploadImages, itemsController.createItems);
 router.delete("/delete/:id", itemsController.deleteItem);
 router.put("/edit/:id", itemsController.editItem);

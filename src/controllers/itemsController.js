@@ -115,6 +115,28 @@ exports.getItemsByType = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getItem = catchAsync(async (req, res, next) => {
+  const items = await Item.find().populate("typeId");
+  console.log(items.length);
+
+  const updatedItemsPromises = items.map(async (item) => {
+    try {
+      const images = await getImages(item.images);
+      return { ...item.toObject(), images };
+    } catch (error) {
+      console.error(`Error fetching images for item ${item._id}:`, error);
+      return item;
+    }
+  });
+
+  const updatedItems = await Promise.all(updatedItemsPromises);
+
+  res.status(200).json({
+    message: "Success",
+    items: updatedItems,
+  });
+});
+
 exports.getSingleItemById = catchAsync(async (req, res, next) => {
   const itemId = req.params.itemId;
   const item = await Item.findById(itemId);

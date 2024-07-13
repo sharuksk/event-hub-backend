@@ -23,7 +23,6 @@ const ClientSchema = new mongoose.Schema(
     contact: { type: String, required: true },
     bestWork: [{ type: String }],
     description: { type: String, required: true },
-    price: { type: Number, required: true },
     availability: [AvailabilitySchema],
     catererDetails: CatererSchema,
   },
