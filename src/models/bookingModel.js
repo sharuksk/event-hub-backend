@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 
 const BookingSchema = new mongoose.Schema(
   {
+    title: {
+      type: String,
+      required: true,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       //type: String,
@@ -10,7 +14,7 @@ const BookingSchema = new mongoose.Schema(
       required: true,
     },
     clientId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    itemId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    itemId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Item" },
     organizingTeam: {
       type: mongoose.Schema.Types.ObjectId,
       // ref: "Organizer",
