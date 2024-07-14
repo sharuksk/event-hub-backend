@@ -5,6 +5,51 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const { v4: uuidv4 } = require("uuid");
 
+const mongoose = require("mongoose");
+const { GridFSBucket } = require("mongodb");
+
+const getImages = async (image) => {
+  try {
+    const { db } = mongoose.connection;
+    const imageBucket = new GridFSBucket(db, { bucketName: "images" });
+
+    const filenames = image;
+
+    if (!filenames.length) {
+      throw new Error("No filenames provided");
+    }
+
+    const imagePromises = filenames.map((filename) => {
+      return new Promise((resolve, reject) => {
+        const imageData = [];
+        const downloadStream = imageBucket.openDownloadStreamByName(filename);
+
+        downloadStream.on("data", (data) => {
+          imageData.push(data);
+        });
+
+        downloadStream.on("error", (error) => {
+          reject(new Error(`${filename}, error: Image not found`));
+        });
+
+        downloadStream.on("end", () => {
+          resolve({
+            filename,
+            data: Buffer.concat(imageData).toString("base64"),
+          });
+        });
+      });
+    });
+
+    const images = await Promise.all(imagePromises.map((p) => p.catch((e) => e)));
+
+    return images.filter((image) => image.data);
+  } catch (error) {
+    console.error("Error in getImages:", error);
+    throw error;
+  }
+};
+
 // Create a new booking
 exports.createBooking = catchAsync(async (req, res, next) => {
   const { itemIds } = req.body;
@@ -119,12 +164,57 @@ exports.getEvents = catchAsync(async (req, res, next) => {
       },
     },
   ]);
-  console.log(bookings);
+
+  // Fetch and attach images to the response
+  for (let group of bookings) {
+    for (let booking of group.bookings) {
+      if (booking.itemDetails && booking.itemDetails.images.length > 0) {
+        const images = await getImages(booking.itemDetails.images);
+        booking.itemDetails.images = images;
+      }
+    }
+  }
+
   res.status(200).json({
     message: "success",
     events: bookings,
   });
 });
+
+// exports.getEvents = catchAsync(async (req, res, next) => {
+//   const bookings = await Booking.aggregate([
+//     {
+//       $lookup: {
+//         from: "items", // Assuming the collection name for items is 'items'
+//         localField: "itemId",
+//         foreignField: "_id",
+//         as: "itemDetails",
+//       },
+//     },
+//     {
+//       $unwind: "$itemDetails",
+//     },
+//     {
+//       $group: {
+//         _id: "$groupId",
+//         bookings: { $push: "$$ROOT" },
+//       },
+//     },
+//     {
+//       $project: {
+//         _id: 0,
+//         groupId: "$_id",
+//         bookings: 1,
+//       },
+//     },
+//   ]);
+
+//   console.log(bookings);
+//   res.status(200).json({
+//     message: "success",
+//     events: bookings,
+//   });
+// });
 
 exports.getEventById = catchAsync(async (req, res, next) => {
   const id = req.params.id;
