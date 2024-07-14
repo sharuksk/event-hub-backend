@@ -217,10 +217,30 @@ exports.getEvents = catchAsync(async (req, res, next) => {
 // });
 
 exports.getEventById = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
-  const bookings = await Booking.find({ groupId: id })
-    .populate("itemId") // Populates the itemId field
-    .exec();
+  try {
+    const groupId = req.params.id;
 
-  res.status(200).json({ message: "success", event: bookings });
+    const bookings = await Booking.find({ groupId })
+      .populate("user")
+      .populate({
+        path: "itemId",
+        populate: { path: "typeId" },
+      })
+      .exec();
+    console.log(bookings[0]);
+    const bookingsWithImages = await Promise.all(
+      bookings.map(async (booking) => {
+        const item = booking.itemId;
+
+        const imageFiles = [...item.images, ...item?.decorationImages];
+        const images = await getImages(imageFiles);
+        return { ...booking.toObject(), item: { ...item.toObject(), images } };
+      }),
+    );
+
+    res.status(200).json({ message: "Success", bookings: bookingsWithImages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
 });
