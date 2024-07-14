@@ -221,7 +221,7 @@ exports.getEventById = catchAsync(async (req, res, next) => {
     const groupId = req.params.id;
 
     const bookings = await Booking.find({ groupId })
-      .populate("user")
+
       .populate({
         path: "itemId",
         populate: { path: "typeId" },
