@@ -70,3 +70,9 @@ exports.loginUser = async (req, res) => {
     res.status(400).json({ message: err });
   }
 };
+
+// Get user by id
+exports.getUserById = async (req, res, next) => {
+  const users = await User.findById(req.params.id);
+  res.status(200).json({ users });
+};
