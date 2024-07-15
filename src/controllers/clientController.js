@@ -145,6 +145,8 @@ exports.updateClient = catchAsync(async (req, res, next) => {
       new: true,
       runValidators: true,
     });
+    const nClient = await client.populate("role");
+    console.log(nClient);
 
     if (!client) {
       return next(new AppError("No client found with that ID"));
@@ -152,7 +154,7 @@ exports.updateClient = catchAsync(async (req, res, next) => {
     res.status(201).json({
       status: "success",
       data: {
-        client,
+        client: nClient,
       },
     });
   } catch (err) {

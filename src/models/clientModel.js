@@ -19,7 +19,7 @@ const ClientSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
     role: { type: mongoose.Schema.Types.ObjectId, ref: "Type", required: true },
     workExperience: { type: Number, required: true },
-    location: { type: String, required: true },
+    location: { type: String },
     contact: { type: String, required: true },
     bestWork: [{ type: String }],
     description: { type: String, required: true },

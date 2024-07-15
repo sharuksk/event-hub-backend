@@ -27,6 +27,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
 
     // Convert Mongoose document to plain JavaScript object
     const userObj = user.toObject();
+    userObj.id = userObj._id;
 
     // Remove the password field from the response
     delete userObj.password;
