@@ -149,3 +149,14 @@ exports.getSingleItemById = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ message: "success", item: item, images: images, decorationImages: decorationImages });
 });
+
+// Get item by userId
+exports.getItemByUserId = async (req, res, next) => {
+  try {
+    const Items = await Item.find({ clientId: req.params.userId });
+    res.status(200).json({ Items });
+  } catch (error) {
+    console.error("Error:", error);
+    next(error);
+  }
+};
