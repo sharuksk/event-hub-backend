@@ -125,16 +125,17 @@ exports.createClient = catchAsync(async (req, res, next) => {
 
 // * Get Client by id
 exports.getClientByID = catchAsync(async (req, res, next) => {
-  const client = await Client.findOne({ userId: req.params.id }).populate("role");
-
-  if (!client) {
+  const client = await Client.find({ userId: req.params.id });
+  console.log(client);
+  if (!client[0]) {
     return res.status(200).json({ message: "No client for this userid" });
   }
-  // const nClient = await client.populate("role");
+  console.log(client);
+  const nClient = await client[0].populate("role");
   res.status(200).json({
     status: "success",
     data: {
-      client: client,
+      client: nClient,
     },
   });
 });
