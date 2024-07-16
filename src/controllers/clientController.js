@@ -130,7 +130,8 @@ exports.getClientByID = catchAsync(async (req, res, next) => {
   if (!client) {
     return res.status(200).json({ message: "No client for this userid" });
   }
-  const nClient = await client.populate("role");
+  console.log(client);
+  const nClient = await client[0].populate("role");
   res.status(200).json({
     status: "success",
     data: {

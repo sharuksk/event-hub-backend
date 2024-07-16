@@ -17,7 +17,7 @@ app.use(express.json({ limit: "50mb" }));
 
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ["http://localhost:5173", "https://event-app-qatar.netlify.app/"];
 
 app.use(
   cors({
