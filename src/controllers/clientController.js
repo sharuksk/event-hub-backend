@@ -126,8 +126,8 @@ exports.createClient = catchAsync(async (req, res, next) => {
 // * Get Client by id
 exports.getClientByID = catchAsync(async (req, res, next) => {
   const client = await Client.find({ userId: req.params.id });
-
-  if (!client) {
+  console.log(client);
+  if (!client[0]) {
     return res.status(200).json({ message: "No client for this userid" });
   }
   console.log(client);
