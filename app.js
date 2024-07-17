@@ -141,6 +141,7 @@ app.use((err, req, res, next) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization",
   );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.status(err.status || 500).json({
     status: err.status || 500,
     message: err.message || "Internal Server Error",
