@@ -13,7 +13,7 @@ const BookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    clientId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    clientId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Client" },
     itemId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Item" },
     organizingTeam: {
       type: mongoose.Schema.Types.ObjectId,

@@ -19,7 +19,7 @@ router.put("/bookings/:id", bookingController.editBooking);
 router.get("/bookings/:id", bookingController.getBookingsByClientId);
 
 //confirm bookings by client
-router.put("/booking/confirm/:id", bookingController.confirmBooking);
+router.put("/bookings/confirm/:id", bookingController.confirmBooking);
 
 router.get("/events", bookingController.getEvents);
 router.get("/events/:id", bookingController.getEventById);

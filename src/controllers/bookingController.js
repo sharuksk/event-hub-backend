@@ -1,5 +1,6 @@
 // controllers/bookingController.js
 const Booking = require("../models/bookingModel");
+const Client = require("../models/clientModel");
 const Item = require("../models/itemsModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
@@ -133,10 +134,39 @@ exports.editBooking = catchAsync(async (req, res, next) => {
 
 exports.confirmBooking = catchAsync(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id);
+  console.log(req.body);
+
   if (!booking) return next(new AppError("Booking not found", 404));
 
-  booking.isConfirmed = true;
+  const client = await Client.findById(booking.clientId);
+
+  if (!client) return next(new AppError("Client not found", 404));
+
+  if (req.body.isConfirmed) {
+    const existingDates = new Set(client.availability.map((date) => date.toISOString()));
+    const conflictingDates = booking.date.filter((date) => existingDates.has(date.toISOString()));
+
+    if (conflictingDates.length > 0) {
+      return res.status(400).json({
+        message: "Some dates in the booking already exist in the client's availability.",
+        conflictingDates,
+      });
+    }
+
+    client.availability.push(...booking.date);
+
+    booking.isConfirmed = true;
+  } else {
+    client.availability = client.availability.filter(
+      (date) =>
+        !booking.date.some((bookingDate) => bookingDate.toISOString() === date.toISOString()),
+    );
+
+    booking.isConfirmed = false;
+  }
   await booking.save();
+  await client.save();
+
   return res.status(201).json({ message: "success", booking });
 });
 
