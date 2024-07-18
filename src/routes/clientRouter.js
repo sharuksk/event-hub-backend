@@ -21,5 +21,6 @@ router
   .delete(clientController.deleteClient);
 
 router.get("/client/:clientId/bookings", clientController.clientBooked);
+router.route("/clientId/:id").get(clientController.getClientByClientID);
 
 module.exports = router;

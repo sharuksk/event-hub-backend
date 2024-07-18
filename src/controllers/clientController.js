@@ -123,7 +123,7 @@ exports.createClient = catchAsync(async (req, res, next) => {
   }
 });
 
-// * Get Client by id
+// * Get Client by userId
 exports.getClientByID = catchAsync(async (req, res, next) => {
   const client = await Client.find({ userId: req.params.id });
   console.log(client);
@@ -195,6 +195,22 @@ exports.clientBooked = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       bookings,
+    },
+  });
+});
+
+// * Get Client by clientId
+exports.getClientByClientID = catchAsync(async (req, res, next) => {
+  console.log("client");
+  const client = await Client.findById(req.params.id);
+  console.log(client);
+  if (!client) {
+    return res.status(200).json({ message: "No client for this userid" });
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      client: client,
     },
   });
 });
