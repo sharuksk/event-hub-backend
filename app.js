@@ -72,7 +72,7 @@
 
 // app.use(globalErrorHandler);
 
-// module.exports = app;
+/* module.exports = app;*/
 
 const express = require("express");
 const morgan = require("morgan");

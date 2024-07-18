@@ -73,8 +73,6 @@ exports.createItems = catchAsync(async (req, res, next) => {
     ? req?.files?.decorationImages?.map((file) => file.filename)
     : [];
 
-  console.log(req.files);
-
   if (decorationFiles.length > 0) req.body.decorationImages = decorationFiles;
 
   if (imageFiles.length > 0) req.body.images = imageFiles;
@@ -117,7 +115,6 @@ exports.getItemsByType = catchAsync(async (req, res, next) => {
 
 exports.getItem = catchAsync(async (req, res, next) => {
   const items = await Item.find().populate("typeId");
-  console.log(items.length);
 
   const updatedItemsPromises = items.map(async (item) => {
     try {
