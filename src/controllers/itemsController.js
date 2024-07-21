@@ -33,7 +33,7 @@ const getImages = async (image) => {
     const filenames = image;
 
     if (!filenames.length) {
-      return res.status(400).send({ error: "No filenames provided" });
+      return;
     }
     const imagePromises = filenames.map((filename) => {
       return new Promise((resolve, reject) => {

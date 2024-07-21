@@ -134,7 +134,6 @@ exports.editBooking = catchAsync(async (req, res, next) => {
 
 exports.confirmBooking = catchAsync(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id);
-  console.log(req.body);
 
   if (!booking) return next(new AppError("Booking not found", 404));
 
@@ -260,7 +259,7 @@ exports.getEventById = catchAsync(async (req, res, next) => {
         populate: { path: "typeId" },
       })
       .exec();
-    console.log(bookings[0]);
+
     const bookingsWithImages = await Promise.all(
       bookings.map(async (booking) => {
         const item = booking.itemId;
