@@ -85,6 +85,7 @@ const typesRouter = require("./src/routes/typesRouter");
 const itemsRouter = require("./src/routes/itemsRouter");
 const clientRouter = require("./src/routes/clientRouter");
 const calendarRouter = require("./src/routes/calendarRouter");
+const userDetailRouter = require("./src/routes/userDetailRouter");
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
@@ -128,6 +129,7 @@ app.use("/api/v1/", userRouter);
 app.use("/api/v1/types", typesRouter);
 app.use("/api/v1/items", itemsRouter);
 app.use("/api/v1/", clientRouter);
+app.use("/api/v1/", userDetailRouter);
 app.use("/api/v1/", calendarRouter);
 
 app.all("*", (req, res, next) => {
